@@ -3,27 +3,23 @@ import SpectralPartition
 
 class DivisivenessAnalyzer:
     def __init__(self, issue, years):
-        self.dataset = self.load_dataset(issue)
-        self.projections = {year: self.generate_projection(year) for year in years}
+        self.issue = issue
+        self.projections = {year: self.load_projection(year) for year in years}
         self.spectral_partitions = self.generate_spectral_partitions()
 
     #######################################
               #  Data loading  #
     #######################################
-
-    def load_dataset(self, issue):
-        pass
-
     """
-    Generates the issue projection for a given year. Should save the file
-    and try to repopulate from cache.
+    Loads the issue projections for a given year.
+    Found in dataset/<issue>/<year>.graph
     """
-    def generate_projection(self, year):
+    def load_projection(self, year):
         pass
 
     """
     Given a congressional graph projection, generates the associated spectral partition.
-    Perhaps should save a picked version of obj?
+    Perhaps should save a pickled version of obj?
     """
     def generate_spectral_partitions(self):
 
