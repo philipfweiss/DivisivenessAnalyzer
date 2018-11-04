@@ -1,4 +1,4 @@
-import snap
+import numpy
 
 class DatasetGenerator:
 
@@ -12,12 +12,10 @@ class DatasetGenerator:
         for issue in self.issues:
             for cid in self.congresses:
                 votes = self.generate_dataset(issue, cid)
-
-                filename = "./%s/%s.pickle" % (issue, cid)
+                matrix = self.generateAdjacencyMatrix(votes)
+                filename = "./%s/%s.npy" % (issue, cid)
                 os.makedirs(os.path.dirname(filename))
-                with open(filename, 'wb') as handle:
-                    pickle.dump(votes, handle, protocol=pickle.HIGHEST_PROTOCOL)
-
+                numpy.save(filename, matrix)
 
     def generate_dataset(self, issue, cid):
         rollcalls = [rc for rc in self.issueMap[issue] if rc.identifier[0] == cid]
@@ -39,14 +37,17 @@ class DatasetGenerator:
                 votepair = (rc.votes[i], rc.votes[j]) # Note that i < j.
                 votes[votepair]+= 1
 
-    # def generateProjection(self, votes):
-    #     graph = snap.TUNGraph.New()
-    #     nodes = set()
-    #
-    #     for pair in votes.keys(): nodes |= set(pair)
-    #     for node in nodes: graph.AddNode(node)
-    #     for pair in votes.keys(): graph.AddEdge2()
-    #     return (votes, graph)
+    def generateAdjacencyMatrix(self, votes):
+        nodes = set()
+        for pair in votes.keys(): nodes |= set(pair)
+        dim = len(nodes)
+        matrix = numpy.matrix.shape((dim, dim))
+        for k, v in votes.items():
+            matrix[k[0], k[1]] = v
+            matrix[k[1], k[0]] = v
+
+        return matrix
+
 
 #
 # dg = DatasetGenerator()
