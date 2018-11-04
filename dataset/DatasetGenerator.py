@@ -11,10 +11,13 @@ class DatasetGenerator:
     def generate_datasets(self):
         for issue in self.issues:
             for cid in self.congresses:
-                dataset = self.generate_dataset(issue, cid)
+                votes = self.generate_dataset(issue, cid)
 
-                with open("%s/%s.pickle" % (issue, cid), 'wb') as handle:
-                    pickle.dump(dataset, handle, protocol=pickle.HIGHEST_PROTOCOL)
+                filename = "./%s/%s.pickle" % (issue, cid)
+                os.makedirs(os.path.dirname(filename))
+                with open(filename, 'wb') as handle:
+                    pickle.dump(votes, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
 
     def generate_dataset(self, issue, cid):
         rollcalls = [rc for rc in self.issueMap[issue] if rc.identifier[0] == cid]
@@ -28,11 +31,7 @@ class DatasetGenerator:
             for key in [rc.votes.keys()]:
                 self.countVotes(rc, key, votes)
 
-        filename = "./%s/%s.pickle" % (issue, cid)
-        os.makedirs(os.path.dirname(filename))
-        with open(filename, 'wb') as handle:
-            pickle.dump(votes, handle, protocol=pickle.HIGHEST_PROTOCOL)
-
+        return votes
 
     def countVotes(self, rc, key, votes):
         for i in range(len(rc.votes[key])):
