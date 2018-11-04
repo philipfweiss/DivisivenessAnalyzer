@@ -1,22 +1,19 @@
-import csv
-import re
-from urllib.request import urlopen
-
-
-def title_contains_keywords(title, keywords):
-    return any([keyword in title.lower().split() for keyword in keywords])
-
-def load_bill_data(file):
-    file = urlopen("https://voteview.com/static/data/out/rollcalls/HSall_rollcalls.json")
-    content = file.read()
-    c = re.findall("issue_codes\":\[[^\]]*\]", content)
-    print()
-
-        # csv_reader = csv.reader(f, delimiter='\t')
-        # for line in csv_reader:
-        #     if title_contains_keywords(line[26], ['abortion', 'child']):#['gun', 'assault', 'firearm', 'weapon']):
-        #         print(line[1], line[26])
-
-
-
-load_bill_data("bills80-92.txt")
+import json
+with open("HSall_rollcalls.json") as f:
+	f = f.read()
+pos = 0
+decoder = json.JSONDecoder()
+bills = []
+issue_codes = set()
+while True:
+	try:
+		obj, pos = decoder.raw_decode(f, pos)
+		bills.append(obj)
+		if obj["bill_number"] is not None and obj["issue_codes"] is not None:
+			for item in obj["issue_codes"]:
+				if not item in issue_codes:
+					print(item)
+					issue_codes.add(item)
+	except json.JSONDecodeError as e:
+		#print(e)
+		pos += 1
