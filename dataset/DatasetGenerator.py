@@ -1,33 +1,54 @@
+import snap
+
 class DatasetGenerator:
-    def __init__(self):
-        self.bill_issue_mapping = self.generate_bill_issue_mapping()
+
+    def __init__(self, issues, issueMap, congresses, partyMapping):
+        self.issues = issues
+        self.issueMap = issueMap
+        self.congresses = congresses
+        self.partyMapping = partyMapping
+
+    def generate_datasets(self):
+        for issue in self.issues:
+            for cid in self.congresses:
+                dataset = self.generate_dataset(issue, cid)
+
+                with open("%s/%s.pickle" % (issue, cid), 'wb') as handle:
+                    pickle.dump(dataset, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
+    def generate_dataset(self, issue, cid):
+        rollcalls = [rc for rc in self.issueMap[issue] if rc.identifier[0] == cid]
+        congressPeople = set()
+
+        # Map from tuple of conggresspeople to number of times they have agreed.
+        votes = collections.defaultdict(int)
+
+        # Count all of the votes in the rollcall object.
+        for rc in rollcalls:
+            for key in [rc.votes.keys()]:
+                self.countVotes(rc, key, votes)
+
+        filename = "./%s/%s.pickle" % (issue, cid)
+        os.makedirs(os.path.dirname(filename))
+        with open(filename, 'wb') as handle:
+            pickle.dump(votes, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
 
-    def generate_dataset(slef):
-        pass
+    def countVotes(self, rc, key, votes):
+        for i in range(len(rc.votes[key])):
+            for j in range(i+1, len(rc.votes[key])):
+                votepair = (rc.votes[i], rc.votes[j]) # Note that i < j.
+                votes[votepair]+= 1
 
-    #######################################
-              #  Data loading  #
-    #######################################
+    # def generateProjection(self, votes):
+    #     graph = snap.TUNGraph.New()
+    #     nodes = set()
+    #
+    #     for pair in votes.keys(): nodes |= set(pair)
+    #     for node in nodes: graph.AddNode(node)
+    #     for pair in votes.keys(): graph.AddEdge2()
+    #     return (votes, graph)
 
-    def load_raw(self):
-        pass
-
-    def transform_data(self):
-        pass
-
-    def generate_projection(self, issue, year):
-        pass
-
-    def save_projection(self, issue, year):
-        pass
-
-    #######################################
-              #  Helper Functions  #
-    #######################################
-    def generate_bill_issue_mapping(self):
-        pass
-
-
-dg = DatasetGenerator()
-dg.generate_datasets()
+#
+# dg = DatasetGenerator()
+# dg.generate_datasets()

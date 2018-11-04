@@ -1,6 +1,6 @@
 class RollCall:
     def __init__(self, identifier, topics):
-        self.identifier = identifier
+        self.identifier = identifier ## (Congress, Role Number)
         self.topics = topics
         self.votes = {
             "yes": [],
@@ -11,12 +11,9 @@ class RollCall:
 
 ## Also getting map from issue to list of rollcalls
 
-# roleId => Party
-class Person:
-    def __init__(self, ):
-        self.roleId = roleId
-        self.partyCode = partyCode
 
+# roleId => Party
+mapping
 
 
 
