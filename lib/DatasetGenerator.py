@@ -10,8 +10,8 @@ class DatasetGenerator:
         self.issues = issues
         self.issue_call_map = self.load_pickle('./pickle/issue_call_map.pkl')
         #print(self.issue_call_map.keys())
-        for k in sorted((len(self.issue_call_map[k]), k) for k in self.issue_call_map):
-            print(k)
+        # for k in sorted((len(self.issue_call_map[k]), k) for k in self.issue_call_map):
+        #     print(k)
 
         ## issueMap[issue][congress] => rollcalls.
         ## call_uid_map[congressId][(id, rollcall#)] => rollcall
