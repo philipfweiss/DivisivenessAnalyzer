@@ -130,10 +130,10 @@ for graph in graphs[CURRENT_TOPIC]:
             dg_dems[cong][i] = 1
     # print(dg_dems.shape)
 
-most_dem = max([(v, k) for k, v in demsen.items()])[1]
-most_rep = max([(v, k) for k, v in repsen.items()])[1]
-print(most_dem)
-print(most_rep)
+# most_dem = max([(v, k) for k, v in demsen.items()])[1]
+# most_rep = max([(v, k) for k, v in repsen.items()])[1]
+# print(most_dem)
+# print(most_rep)
 
 dem_polarization = []
 
@@ -163,19 +163,29 @@ class PageRankSim(object):
         return np.dot(np.ravel(r0), self.dg)
 
 x1, x2 = [], []
+
+senator = [14828, 94828]
+senator_name = "Ralph Hall"
+senator_party = dg_dems
+
 for graph in graphs[CURRENT_TOPIC]:
     #
     congress, (g, strs) = graph
     # if not strs: continue
+    strs = {v:k for k, v in enumerate(strs)}
 
     # dem_idx = strs.index(most_dem)
     # print(g.shape, len(strs))
     # rep_idx = strs.index(most_rep)
-    if most_dem not in strs: continue
-    dem_idx = strs.index(most_dem)
+    idx = None
+    for s in senator:
+        if s in strs: 
+            idx = strs[s]
+            break
+    if idx is None: continue
 
     # print("ROO", rep_idx, most_rep, strs)
-    dpr = PageRankSim(graph, dem_idx, dg_dems[congress])
+    dpr = PageRankSim(graph, idx, senator_party[congress])
     dsim = dpr.findSameParty()
 
     # rpr = PageRankSim(graph, rep_idx, dg_reps[congress])
@@ -188,12 +198,9 @@ for graph in graphs[CURRENT_TOPIC]:
         dsim = float(dsim)
         x2.append((congress * 2 + 1788, dsim))
 
-axes = plt.gca()
-fig, ax = plt.subplots()
+# axes = plt.gca()
+_, ax = plt.subplots()
 ax.axhline(y=0.5, xmin=0.0, xmax=1.0, color='r')
-axes.set_ylim([0, 1])
-
-plt.title("Personalized Pagerank Polarization for Charles B. Rangel (D. NY) [Abortion]")
+plt.title("PPR Partisanship for " + senator_name)
 plt.plot(*np.array(x2).T)
-
 plt.show()
