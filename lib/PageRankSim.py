@@ -144,8 +144,13 @@ class PageRankSim(object):
         self.idx = idx
         self.dg = dg
     def findSameParty(self):
-        sums = np.sum(self.graph, axis=0, keepdims=True)
-        mat = self.graph / sums
+        vv = self.dg / np.sum(self.dg) + (1 - self.dg) / np.sum(1 - self.dg)
+        mat = self.graph * vv.reshape([-1, 1])
+        mat = mat / np.sum(mat, axis=0, keepdims=True)
+        beta = 0.8
+        teleport = np.zeros([mat.shape[0], 1])
+        teleport[self.idx] = 1
+        mat = beta * mat + (1 - beta) * teleport
         r0 = np.random.randn(self.graph.shape[0], 1) ** 2
         r0 = r0 / np.sum(r0)
         niter = 0
@@ -166,20 +171,19 @@ for graph in graphs[CURRENT_TOPIC]:
     # dem_idx = strs.index(most_dem)
     # print(g.shape, len(strs))
     # rep_idx = strs.index(most_rep)
-    dem_idx = 0
-    rep_idx = 0
-    if dem_idx < 0 or rep_idx < 0: continue
+    if most_dem not in strs: continue
+    dem_idx = strs.index(most_dem)
 
     # print("ROO", rep_idx, most_rep, strs)
     dpr = PageRankSim(graph, dem_idx, dg_dems[congress])
     dsim = dpr.findSameParty()
 
-    rpr = PageRankSim(graph, rep_idx, dg_reps[congress])
-    rsim = rpr.findSameParty()
+    # rpr = PageRankSim(graph, rep_idx, dg_reps[congress])
+    # rsim = rpr.findSameParty()
 
-    if rsim is not None:
-        rsim = float(rsim)
-        x1.append((congress * 2 + 1788, rsim))
+    # if rsim is not None:
+    #     rsim = float(rsim)
+    #     x1.append((congress * 2 + 1788, rsim))
     if dsim is not None:
         dsim = float(dsim)
         x2.append((congress * 2 + 1788, dsim))
