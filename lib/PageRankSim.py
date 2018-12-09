@@ -33,6 +33,8 @@ class PageRankSim:
         for i in range(numIters):
             r = np.matmul(self.teleportmatrix, r)
 
+        print(sum(r))
+
     def getSenators(self):
         senators = set()
         _, graph = self.graph
